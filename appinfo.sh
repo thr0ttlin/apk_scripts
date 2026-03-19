@@ -6,7 +6,7 @@ name="appinfo"
 if [ -z "$1" ]; then
     echo "App Info JSON ~ Request To Google Play"
     echo "Requirements:   python, google-play-scrapper"
-    echo "Repository:     github.com/redrockstyle/apk_scripts"
+    echo "Repository:     github.com/thr0ttlin/apk_scripts"
     echo ""
     echo "Usage:          $name <some.package.name> [lang] [country]"
     echo ""

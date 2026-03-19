@@ -25,7 +25,7 @@ msg_and_die() {
 print_prolog() {
     echo "Small Runtime Assistent"
     echo "Requirements:   aapt, adb, qpdf, openssl, apksigner"
-    echo "Repository:     github.com/redrockstyle/apk_scripts"
+    echo "Repository:     github.com/thr0ttlin/apk_scripts"
 }
 print_usage() {
     echo "Usage: ${name} <command> <command_argument>"
@@ -72,16 +72,23 @@ check_appname() {
         msg_and_die "App is not installed"
     fi
 }
+check_cert_sdk() {
+    sdk_version=$(adb shell getprop ro.build.version.sdk)
+    saved_str=$(echo "Certificate has been saved in $1")
+    if [ $? -eq 0 ] ; then
+        echo "$saved_str"
+        die
+    fi
+    if [ "$sdk_version" -ge 34 ] ; then
+        echo "$saved_str"
+        msg_and_die "Device SDK > 34 (Android 14+)"
+    fi
+    
+}
 check_connect() {
-#     dev=$(adb devices -l 2>/dev/null | grep "device product")
-#     if [ $? -ne 0 ] ; then
-#         msg_and_die "Device is not connected"
-#     fi
     count=$(adb devices -l | wc -l)
     if [[ $count < 3 ]] ; then
         msg_and_die "Device is not connected"
-#     if [ $count -ne 1 ] ; then
-#         msg_and_die "Connected $count devices (one connect supported)"
     fi
 }
 do_install() {
@@ -162,6 +169,9 @@ do_burpcert() {
     openssl x509 -inform DER -in $1 -out "${tmp_pem}"
     tmp_name=$(openssl x509 -inform PEM -subject_hash_old -in "${tmp_pem}" |head -1)
     mv "${tmp_pem}" "${tmp_name}".0
+    
+    check_cert_sdk "${tmp_name}".0
+    
     echo "Reload ADB root"
     adb root
     adb shell "mount -o rw,remount /"
@@ -174,6 +184,9 @@ do_mitmproxy_cert(){
     check_connect
     tmp_name=$(openssl x509 -inform PEM -subject_hash_old -in "$1" |head -1)
     mv "$1" "${tmp_name}".0
+    
+    check_cert_sdk "${tmp_name}".0
+    
     echo "Reload ADB root"
     adb root
     adb shell "mount -o rw,remount /"

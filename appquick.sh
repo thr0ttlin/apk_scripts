@@ -71,7 +71,7 @@ print_prolog() {
     echo -e "This is a small script for collecting information about the app"
     echo -e "Just put your package file or some.package.name :D"
     echo -e "Requirements:\taapt, adb, apkanalyzer, xmlstarlet, unzip"
-    echo -e "Repository:\tgithub.com/redrockstyle/apk_scripts"
+    echo -e "Repository:\tgithub.com/thr0ttlin/apk_scripts"
 }
 print_usage() {
     echo "Usage: ${name} [-vfdeicmh] [-s <device_id>] -a <application>"
